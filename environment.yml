@@ -1,0 +1,13 @@
+name: dl
+channels:
+- pytorch
+- defaults
+dependencies:
+- cudatoolkit=9.0=h13b8566_0
+- keras=2.2.4-0
+- matplotlib=3.0.3=py37h5429711_0
+- nltk=3.4=py37_1
+- numpy=1.16.2=py37h7e9f1db_0
+- pandas=0.24.2=py37he6710b0_0
+- scipy=1.2.1=py37h7c811a0_0
+- pytorch=1.0.1=py3.7_cuda9.0.176_cudnn7.4.2_2
