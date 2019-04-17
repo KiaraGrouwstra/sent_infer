@@ -17,36 +17,33 @@ conda env create -n sent -f environment.yml
 conda env update -n sent -f environment.yml
 source activate sent
 pip install git+https://github.com/PetrochukM/PyTorch-NLP.git
-python src/foo.py
+python src/main.py
 ```
 
 ### Overview
 
-- [ ] get data
-    - [ ] SNLI
-    - [ ] GloVe
-- [ ] preprocess data:
-    - [ ] https://github.com/brmson/dataset-sts/tree/master/data/rte/snli
-    - [ ] tokenize
-    - [ ] filter GloVe to SNLI/EvalSent
-    - [ ] NLTK Penn treebank tokenizer
-- [ ] combine data
-- [ ] NLI architecture
+- [x] get data
+    - [x] SNLI
+    - [x] GloVe
+- [x] preprocess data:
+    - [x] tokenize: NLTK Penn treebank tokenizer
+    - [x] filter GloVe to SNLI/EvalSent
+- [x] NLI architecture
 - [ ] models
     - [ ] glove baseline
     - [ ] uni-directional LSTM
     - [ ] bi-directional LSTM
     - [ ] bi-directional LSTM + max pooling
-- [ ] hyperparams: Conneau 3.3
-    - [ ] SGD
-    - [ ] learning rate 0.1
-    - [ ] weight decay 0.99
-    - [ ] at each epoch, we divide the learning rate by 5 if the dev accuracy decreases
-    - [ ] use mini-batches of size 64
-    - [ ] training is stopped when the learning rate goes under the threshold of 10e-5
-    - [ ] classifier
-        - [ ] MLP
-        - [ ] 1 hidden layer of 512 hidden units
+- [x] hyperparams: Conneau 3.3
+    - [x] SGD
+    - [x] learning rate 0.1
+    - [x] weight decay 0.99
+    - [x] at each epoch, we divide the learning rate by 5 if the dev accuracy decreases
+    - [x] use mini-batches of size 64
+    - [x] training is stopped when the learning rate goes under the threshold of 10e-5
+    - [x] classifier
+        - [x] MLP
+        - [x] 1 hidden layer of 512 hidden units
 - [ ] evaluation
     - [ ] SNLI macro metric: average of dev accuracies
     - [ ] SNLI micro metric: sum of the dev accuracies, weighted by the number of dev samples
