@@ -16,7 +16,8 @@ https://cl-illc.github.io/semantics/resources/practicals/practical1/smnls_practi
 conda env create -n sent -f environment.yml
 conda env update -n sent -f environment.yml
 source activate sent
-pip install git+https://github.com/PetrochukM/PyTorch-NLP.git
+pip install -r requirements.txt
+python src/download.py
 python src/main.py
 ```
 
@@ -29,11 +30,11 @@ python src/main.py
     - [x] tokenize: NLTK Penn treebank tokenizer
     - [x] filter GloVe to SNLI/EvalSent
 - [x] NLI architecture
-- [ ] models
-    - [ ] glove baseline
-    - [ ] uni-directional LSTM
-    - [ ] bi-directional LSTM
-    - [ ] bi-directional LSTM + max pooling
+- [x] models
+    - [x] glove baseline
+    - [x] uni-directional LSTM
+    - [x] bi-directional LSTM
+    - [x] bi-directional LSTM + max pooling
 - [x] hyperparams: Conneau 3.3
     - [x] SGD
     - [x] learning rate 0.1
@@ -44,9 +45,9 @@ python src/main.py
     - [x] classifier
         - [x] MLP
         - [x] 1 hidden layer of 512 hidden units
-- [ ] evaluation
-    - [ ] SNLI macro metric: average of dev accuracies
-    - [ ] SNLI micro metric: sum of the dev accuracies, weighted by the number of dev samples
+- [x] evaluation
+    - [x] SNLI macro metric: average of dev accuracies
+    - [x] SNLI micro metric: sum of the dev accuracies, weighted by the number of dev samples
     - [ ] SentEval: https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
-- [ ] visualization
+- [x] visualization
     - tensorboard: https://github.com/lanpa/tensorboardX

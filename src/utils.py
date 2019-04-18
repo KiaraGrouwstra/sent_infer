@@ -14,3 +14,8 @@ def intersperse(e, l):
 # # https://stackoverflow.com/a/37557813/1502035
 # compose = lambda F: functools.reduce(lambda f, g: lambda x: f(g(x)), F)
 # pipe =    lambda F: functools.reduce(lambda f, g: lambda x: f(g(x)), reversed(F))
+
+def invert_idxs(idxs):
+    rng = list(range(len(idxs)))
+    inv = dict(zip(idxs, rng))
+    return [inv[i] for i in rng]

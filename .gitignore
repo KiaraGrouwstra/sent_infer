@@ -1,9 +1,11 @@
 __MACOSX
 .DS_Store
 data
+runs
 # data/snli_1.0
 .word_vectors_cache
 dataset-sts
+SentEval
 
 # https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 
