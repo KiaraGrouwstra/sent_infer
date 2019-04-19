@@ -1,2 +1,3 @@
 pytorch-nlp==0.4.1
 tensorboardX==1.6
+torchtext==0.3.1

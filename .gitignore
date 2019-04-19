@@ -1,9 +1,11 @@
 __MACOSX
 .DS_Store
+.data
 data
 runs
 # data/snli_1.0
 .word_vectors_cache
+.vector_cache/
 dataset-sts
 SentEval
 

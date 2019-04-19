@@ -1,5 +1,6 @@
 import itertools
 import functools
+import numpy as np
 
 # https://docs.python.org/3/library/itertools.html
 def pairwise(iterable):
@@ -11,11 +12,25 @@ def pairwise(iterable):
 def intersperse(e, l):    
     return list(itertools.chain(*[(i, e) for i in l]))[0:-1]
 
-# # https://stackoverflow.com/a/37557813/1502035
-# compose = lambda F: functools.reduce(lambda f, g: lambda x: f(g(x)), F)
-# pipe =    lambda F: functools.reduce(lambda f, g: lambda x: f(g(x)), reversed(F))
-
 def invert_idxs(idxs):
     rng = list(range(len(idxs)))
     inv = dict(zip(idxs, rng))
     return [inv[i] for i in rng]
+
+# accuracy function from deep learning practical
+def accuracy(predictions, targets):
+    """
+    Computes the prediction accuracy, i.e. the average of correct predictions
+    of the network.
+    
+    Args:
+      predictions: 2D float array of size [batch_size, n_classes]
+      labels: 2D int array of size [batch_size, n_classes]
+              with one-hot encoding. Ground truth labels for
+              each sample in the batch
+    Returns:
+      accuracy: scalar float, the accuracy of predictions,
+                i.e. the average correct predictions over the whole batch
+    """
+    return (predictions.argmax(dim=-1) == targets.argmax(dim=-1)).type(dtype).mean().detach().data.cpu().item()
+ 

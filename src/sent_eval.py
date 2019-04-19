@@ -61,6 +61,7 @@ def batcher(params, batch):
     embeddings = np.vstack(embeddings)
     return embeddings
 
+# TODO: how does this even use our model?
 def sent_eval(data_path):
     params_senteval = {'task_path': data_path, 'usepytorch': True, 'kfold': 10}
     se = senteval.engine.SE(params_senteval, batcher, prepare)
@@ -78,7 +79,7 @@ def senteval_metrics(results):
         acc = result['devacc']
         n = result['ndev']
         macros.append(acc)
-        micros.append(acc * n / total)
+        micros.append(acc * n / total)  # TODO: is this weighting correct?
     # macro metric: average of dev accuracies, equal weight to each class
     macro = np.mean(macros)
     # micro metric: sum of dev accuracies, weighted by number of dev samples; equal weight to each per-document classification decision

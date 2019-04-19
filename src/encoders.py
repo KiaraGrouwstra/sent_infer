@@ -5,18 +5,18 @@ import torch.nn as nn
 class Baseline(nn.Module):
     '''average word embeddings to obtain sentence representations'''
 
-    def __init__(words_length):
+    def __init__(self, words_length, words_dim):
         # words_length: number of words including padding
         super(Baseline, self).__init__()
         self.words_length = words_length
+        self.words_dim = words_dim
 
     def forward(self, packed_seq):
         # words_embeddings: dimensions include embedding dimension, word, and sentence
         words_embeddings = packed_seq.data
         # words_used: number of words per sentence (excl. padding)
         words_used = packed_seq.batch_sizes
-        words_dim = 0
-        return self.words_length / words_used * words_embeddings.mean(dim=words_dim)
+        return self.words_length / words_used * words_embeddings.mean(dim=self.words_dim)
 
 def lstms(words_length):
     # LSTMs: https://github.com/VictorZuanazzi/Inference_Bot/blob/master/code/encoder.py

@@ -26,18 +26,19 @@ class Model(nn.Module):
             torch.nn.Softmax(dim=n_classes),
         ])
 
-    def forward(self, input, lengths):
+    def encode_embeddings(self, encoder, embeddings, lengths):
         # sort by decreasing length
         # sentence_dim = 1
         sorted_lengths, sorted_idxs = lengths.sort(0, descending=True)
         inverted_idxs = invert_idxs(sorted_idxs)
-        sorted_input = input[:, sorted_idxs]
+        sorted_input = embeddings[:, sorted_idxs]
         packed = nn.utils.rnn.pack_padded_sequence(sorted_input, sorted_lengths, batch_first=False)
-        # premises = item['premise']
-        # hypotheses = item['hypothesis']
-        u = self.   premise_encoder(premises)
-        v = self.hypothesis_encoder(hypotheses)
-        out = self.net(u, v)
-        (padded, _lengths) = nn.utils.rnn.pad_packed_sequence(out, batch_first=False, padding_value=0.0, total_length=None)
+        encoded = encoder(packed)
+        (padded, _lengths) = nn.utils.rnn.pad_packed_sequence(encoded, batch_first=False, padding_value=0.0, total_length=None)
         resorted = padded[inverted_idxs, :, :]
         return resorted
+
+    def forward(self, premises, premise_lengths, hypotheses, hypothesis_lengths):
+        u = self.encode_embeddings(self.   premise_encoder, premises,      premise_lengths)
+        v = self.encode_embeddings(self.hypothesis_encoder, hypotheses, hypothesis_lengths)
+        return self.net(u, v)
