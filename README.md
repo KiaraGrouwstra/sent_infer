@@ -2,23 +2,27 @@
 
 ### Intro
 
+This repo holds code for the [assignment](https://cl-illc.github.io/semantics/resources/practicals/practical1/smnls_practical.pdf) of UvA course [Statistical Methods for Natural Language Semantics](https://cl-illc.github.io/semantics/).
 This is mostly an implementation of a paper by Facebook:
 [Supervised Learning of Universal Sentence Representations from 
 Natural Language Inference Data](https://www.arxiv-vanity.com/papers/1705.02364/)
 
-### Assignment description
-https://cl-illc.github.io/semantics/resources/practicals/practical1/smnls_practical.pdf
-
 ### Usage
 
 ```bash
+# download senteval
 ./get_data.sh
+# install packages
 conda env create -n sent -f environment.yml
 conda env update -n sent -f environment.yml
 source activate sent
 pip install -r requirements.txt
-python src/download.py
-python src/main.py
+# training
+python src/train.py <model_type> <model_name> <checkpoint_path> <train_data_path>
+# evaluation
+python src/eval.py <checkpoint_path> <eval_data_path>
+# inference
+python src/infer.py <checkpoint_path> <input_file> <output_file>
 ```
 
 ### Overview
