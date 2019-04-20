@@ -6,8 +6,11 @@ runs
 # data/snli_1.0
 .word_vectors_cache
 .vector_cache/
+cache/
 dataset-sts
 SentEval
+*.pkl
+*.obj
 
 # https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 
