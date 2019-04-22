@@ -3,6 +3,10 @@ import torch.nn as nn
 from utils import *
 # from mlp import MLP
 from matching import Matching
+from pdb import set_trace
+
+# constants
+GLOVE_DIMS = 300  # glove embedding dimensions
 
 class Model(nn.Module):
 
@@ -10,7 +14,7 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.encoder = encoder # ()
         n_classes = 3   # entailment, contradiction, neutral
-        n_inputs = 4 * batch_size  # output dimension of Matching, input to MLP
+        n_inputs = 4 * GLOVE_DIMS  # batch_size  # output dimension of Matching, input to MLP
 
         # classifier: Multi-Layer Perceptron with 1 hidden layer of 512 hidden units
         # dnn_hidden_units = [512]
@@ -29,8 +33,9 @@ class Model(nn.Module):
             classifier,
             torch.nn.Softmax(dim=1),
         ])
-        # self.classifier = classifier
-        # self.softmax = torch.nn.Softmax(dim=1)
+
+        self.classifier = classifier
+        self.softmax = torch.nn.Softmax(dim=1)
 
     # def encode_embeddings(self, embeddings, lengths):
     #     # sort by decreasing length
@@ -45,11 +50,12 @@ class Model(nn.Module):
     #     return resorted
 
     def forward(self, premises, premise_lengths, hypotheses, hypothesis_lengths):
+        # set_trace()
         # u = self.encode_embeddings(premises,      premise_lengths)
         # v = self.encode_embeddings(hypotheses, hypothesis_lengths)
         u = self.encoder(premises,      premise_lengths).mean(dim=0)
         v = self.encoder(hypotheses, hypothesis_lengths).mean(dim=0)
         matched = self.matching(u, v)
-        return self.net(matched.transpose(0,1))
-        # classified = self.classifier(matched.transpose(0,1))
-        # return self.softmax(classified)
+        # return self.net(matched.transpose(0,1))
+        classified = self.classifier(matched) # .transpose(0,1)
+        return self.softmax(classified)

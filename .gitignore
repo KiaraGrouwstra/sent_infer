@@ -1,3 +1,5 @@
+*.pth
+
 __MACOSX
 .DS_Store
 .data

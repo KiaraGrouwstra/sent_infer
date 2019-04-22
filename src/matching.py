@@ -13,7 +13,7 @@ class Matching(nn.Module):
         # concatenation of the two representations (u, v)
         # TODO: decide dimension to concat on
         # TODO: wtf is up with 512 instead of 300?
-        dim = 0
+        dim = 1
         # set_trace()
         concat = torch.cat([u, v], dim=dim)
         # element-wise product u ∗ v

@@ -45,7 +45,7 @@ def invert_idxs(idxs):
 
 # accuracy function from deep learning practical
 def accuracy(predictions, targets):
-    return (predictions.argmax(dim=-1) == targets.argmax(dim=-1)).float().mean().detach().data.cpu().item()
+    return (predictions.argmax(dim=-1) == targets).float().mean().detach().data.cpu().item()
 
 def pick_samples(ds, n):
     examples = ds.examples[0:n]

@@ -26,7 +26,7 @@ def lstms(input_size):
     # LSTMs: https://github.com/VictorZuanazzi/Inference_Bot/blob/master/code/encoder.py
     lstm_conf = {
         'input_size': input_size,
-        'hidden_size': 512,
+        'hidden_size': input_size,  # 512,
         'num_layers': 1,
         'dropout': 0,
     }

@@ -14,6 +14,8 @@ def parse_flags():
     return itemgetter(*flag_keys)(vars(flags))
 
 def eval(checkpoint_path):
+    # batch_size = ?
+    # text_embeds = ?
     model = torch.load(checkpoint_path)
 
     # embeddings = get_embeds(text_field.vocab.vectors)
@@ -21,7 +23,7 @@ def eval(checkpoint_path):
     # , label_embeds
 
     (train, dev, test) = splits
-    (loss, acc) = eval_dataset(model, test, batch_size)
+    (loss, acc) = eval_dataset(model, test, batch_size, text_embeds)
     # vals = [optim, *[val.detach().cpu().numpy().take(0) for val in metrics]]
     stats = {
         # 'optimizer':  optim,

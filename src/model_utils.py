@@ -23,6 +23,7 @@ from encoders import Baseline, lstms  # uni_lstm, bi_lstm
 from model import Model
 from operator import itemgetter
 from timer_cm import Timer
+import pandas as pd
 from pdb import set_trace
 from tqdm import tqdm
 from joblib import Memory
@@ -47,12 +48,12 @@ def get_encoder(enc_type):
         encoder = Baseline(words_dim)  # words_length
     return encoder
 
-def eval_dataset(model, dataset, batch_size, loss_fn):
+def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds):
     cols = ['loss', 'acc']
     df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
     for batch in tqdm(iterator):
-        (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch)
+        (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
         predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
         df = df.append([dict(zip(cols, [
             loss_fn( predictions, labels),

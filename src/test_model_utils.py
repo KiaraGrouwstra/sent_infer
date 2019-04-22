@@ -6,7 +6,7 @@ def test_get_encoder():
 # def test_eval_dataset():
 #     enc_type = 'lstm'
 #     model = get_model(enc_type)
-#     # assert eval_dataset(model, dataset, 1)
+#     # assert eval_dataset(model, dataset, 1, text_embeds)
 
 def test_get_optimizer():
     optim = 'adam'

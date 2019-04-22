@@ -61,6 +61,9 @@ def train():
     flag_keys = ['model_type', 'model_name', 'checkpoint_path', 'train_data_path', 'learning_rate', 'max_epochs', 'batch_size', 'eval_freq', 'weight_decay', 'learning_decay', 'learning_threshold', 'optimizer_type']
     (model_type, model_name, checkpoint_path, train_data_path, lr, max_epochs, batch_size, eval_freq, weight_decay, learning_decay, learning_threshold, optim) = itemgetter(*flag_keys)(vars(flags))
 
+    if not os.path.exists(checkpoint_path):
+        os.makedirs(checkpoint_path)
+
     loss_fn = torch.nn.CrossEntropyLoss()
     (model, optimizer) = make_model(model_type, lr, weight_decay, optim, batch_size)
     # iterate
@@ -84,13 +87,17 @@ def train():
             # (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_rows(batch, text_field, label_vocab, text_embeds)
             # set_trace()
             predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
+            # set_trace()
             train_loss = loss_fn(predictions, labels)
             train_acc = accuracy(predictions, labels)
+            # print('train_loss', train_loss)
+            # print('train_acc', train_acc)
 
             # evaluate on dev set and report results
             if epoch % eval_freq == 0:
-                (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn)
-                print(dev_acc)
+                (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn, device, text_embeds)
+                # print('dev_loss', dev_loss)
+                print('dev_acc', dev_acc)
 
             # # training is stopped when the learning rate goes under the threshold of 10e-5
             # if lr < learning_threshold:
