@@ -1,32 +1,7 @@
 import itertools
-import functools
-import numpy as np
-import pickle
-import dill
-from anycache import anycache
-import argparse
-import itertools
-from functools import reduce
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim
-from torchtext.datasets import SNLI
-from torchtext.vocab import GloVe
-from torchtext.data import Field, BucketIterator, Dataset  # , batch
-from nltk.tokenize import TreebankWordTokenizer
-from tensorboardX import SummaryWriter
-# from utils import *  # accuracy, eval_dataset  # , oh_encode
-# from dataset import DataSet
-# from sent_eval import sent_eval, senteval_metrics  # batcher, prepare
-# from encoders import Baseline, lstms  # uni_lstm, bi_lstm
-# from model import Model
-from operator import itemgetter
-from timer_cm import Timer
-from pdb import set_trace
-from tqdm import tqdm
-from joblib import Memory
-from timeit import default_timer as timer
+from torchtext.data import Dataset
 
 # https://docs.python.org/3/library/itertools.html
 def pairwise(iterable):

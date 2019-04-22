@@ -1,30 +1,15 @@
 import os
-import pickle
-# import dill
-from anycache import anycache
 import argparse
-import itertools
-from functools import reduce
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim
 from torchtext.datasets import SNLI
-from torchtext.vocab import GloVe
-from torchtext.data import Field, BucketIterator  # , batch
-from nltk.tokenize import TreebankWordTokenizer
+from torchtext.data import BucketIterator
 from tensorboardX import SummaryWriter
-from utils import *  # accuracy, eval_dataset  # , oh_encode
-# from dataset import DataSet
-# from sent_eval import sent_eval, senteval_metrics  # batcher, prepare
-from encoders import Baseline, lstms  # uni_lstm, bi_lstm
+from utils import *
+from encoders import Baseline
 from model import Model
 from operator import itemgetter
-from timer_cm import Timer
-from pdb import set_trace
 from tqdm import tqdm
-from joblib import Memory
-from timeit import default_timer as timer
 from model_utils import *
 from data import *
 
@@ -77,17 +62,9 @@ def train():
 
         # train
         (train_iter,) = BucketIterator.splits(datasets=(train,), batch_sizes=[batch_size], device=device, shuffle=True)
-        # train_iter.create_batches()
-        # batch = next(train_iter.batches)
         for batch in tqdm(train_iter):
-        # for epoch in range(max_epochs):
-            # with open('batch_ex.pkl', 'rb') as f:
-            #     batch = pickle.load(f)
             (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
-            # (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_rows(batch, text_field, label_vocab, text_embeds)
-            # set_trace()
             predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
-            # set_trace()
             train_loss = loss_fn(predictions, labels)
             train_acc = accuracy(predictions, labels)
             # print('train_loss', train_loss)
@@ -99,17 +76,17 @@ def train():
                 # print('dev_loss', dev_loss)
                 print('dev_acc', dev_acc)
 
-            # # training is stopped when the learning rate goes under the threshold of 10e-5
-            # if lr < learning_threshold:
-            #     break
+            # training is stopped when the learning rate goes under the threshold of 10e-5
+            if lr < learning_threshold:
+                break
             
-            # # at each epoch, we divide the learning rate by 5 if the dev accuracy decreases
-            # if dev_acc > prev_acc:
-            #     lr /= learning_decay
-            # prev_acc = dev_acc
+            # at each epoch, we divide the learning rate by 5 if the dev accuracy decreases
+            if dev_acc > prev_acc:
+                lr /= learning_decay
+            prev_acc = dev_acc
 
-            # train_loss.backward()
-            # optimizer.step()
+            train_loss.backward()
+            optimizer.step()
 
     torch.save(model.state_dict(), os.path.join(checkpoint_path, f'{model_name}.pth'))
 

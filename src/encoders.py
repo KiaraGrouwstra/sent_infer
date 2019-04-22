@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from utils import *
-from pdb import set_trace
 
 # - glove baseline
 class Baseline(nn.Module):
@@ -39,13 +38,7 @@ def lstms(input_size):
         bi_lstm,
         nn.MaxPool1d(kernel_size),  # torch.max()?
     ])
-    # set_trace()
-    # return [(lambda: LstmEncoder(lstm)) for lstm in [uni_lstm, bi_lstm, max_bi_lstm]]
     return [LstmEncoder(lstm) for lstm in [uni_lstm, bi_lstm, max_bi_lstm]]
-    # uni = lambda: LstmEncoder(uni_lstm)
-    # bi = lambda: LstmEncoder(bi_lstm)
-    # mx = lambda: LstmEncoder(max_bi_lstm)
-    # return (uni, bi, mx)
 
 class LstmEncoder(nn.Module):
 
@@ -55,13 +48,11 @@ class LstmEncoder(nn.Module):
 
     def forward(self, embeddings, lengths):
         # sort by decreasing length
-        # sentence_dim = 1
         sorted_lengths, sorted_idxs = lengths.sort(0, descending=True)
         inverted_idxs = invert_idxs(sorted_idxs.numpy())
         sorted_input = embeddings[:, sorted_idxs]
         packed = nn.utils.rnn.pack_padded_sequence(sorted_input, sorted_lengths, batch_first=False)
         (encoded, _) = self.lstm(packed)
         (padded, _lengths) = nn.utils.rnn.pad_packed_sequence(encoded, batch_first=False, padding_value=0.0, total_length=None)
-        # resorted = padded[inverted_idxs, :, :]
         resorted = padded[:, inverted_idxs, :]
         return resorted
