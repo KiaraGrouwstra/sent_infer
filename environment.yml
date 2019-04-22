@@ -14,3 +14,4 @@ dependencies:
 - tqdm=4.31.1=py37_1
 # - dill=0.2.9=py3
 - joblib=0.13.2=py37_0
+- pytest=4.4.0=py37_1

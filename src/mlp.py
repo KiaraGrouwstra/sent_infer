@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from utils import *
+# from utils import pairwise
 
 class MLP(nn.Module):
   """

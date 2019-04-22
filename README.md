@@ -15,6 +15,7 @@ Natural Language Inference Data](https://www.arxiv-vanity.com/papers/1705.02364/
 # install packages
 conda env create -n sent -f environment.yml
 conda env update -n sent -f environment.yml
+docker build -t sent .
 source activate sent
 pip install -r requirements.txt
 # training

@@ -30,10 +30,10 @@ GLOVE_DIMS = 300  # glove embedding dimensions
 
 def parse_flags():
     parser = argparse.ArgumentParser()
-    parser.add_argument('model_type', type = str, default = 'mean', help='model, baseline (default), lstm, bilstm, maxlstm')
-    parser.add_argument('model_name', type = str, default = 'mean', help='model name, default mean')
-    parser.add_argument('checkpoint_path', type = str, default = 'checkpoint.th', help='check point_path, default checkpoint_path.th')
-    parser.add_argument('train_data_path', type = str, default = 'train.txt', help='train, default train.txt')
+    parser.add_argument('--model_type', type = str, default = 'mean', help='model, baseline (default), lstm, bilstm, maxlstm')
+    parser.add_argument('--model_name', type = str, default = 'mean', help='model name, default mean')
+    parser.add_argument('--checkpoint_path', type = str, default = 'checkpoint.th', help='check point_path, default checkpoint_path.th')
+    parser.add_argument('--train_data_path', type = str, default = 'train.txt', help='train, default train.txt')
 
     # parser.add_argument('--learning_rate', type = float, default = 0.1,
     #                     help='Learning rate')
@@ -66,7 +66,6 @@ def parse_flags():
 flags = parse_flags()
 flag_keys = ['model_type', 'model_name', 'checkpoint_path', 'train_data_path', 'learning_rate', 'max_epochs', 'batch_size', 'eval_freq', 'weight_decay', 'learning_decay', 'learning_threshold', 'optimizer_type', 'encoder_type']
 (model_type, model_name, checkpoint_path, train_data_path, lr, max_epochs, batch_size, eval_freq, weight_decay, learning_decay, learning_threshold, optim, enc_type) = itemgetter(*flag_keys)(vars(flags))
-(n_dim, words_dim, embedding_dim) = range(3)
 
 model = get_model(enc_type)
 pars = model.parameters()
@@ -75,7 +74,7 @@ optimizer = get_optimizer(optim, model.parameters())
 
 # iterate
 prev_acc = 0.0
-# (splits, embeddings) = get_data()
+# (snli, text_vocab, label_vocab, text_embeds) = get_data()
 # (train, dev, test) = splits
 name = encoder().__class__.__name__
 with SummaryWriter(name) as w:
