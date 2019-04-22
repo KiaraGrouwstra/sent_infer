@@ -4,7 +4,7 @@ from model_utils import *
 
 def parse_flags():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--checkpoint_path', type = str, default = 'mean.th', help='model, default mean.th')
+    parser.add_argument('--checkpoint_path', type = str, default = 'checkpoint_folder/mean.pth', help='model, default checkpoint_folder/mean.pth')
     flags, unparsed = parser.parse_known_args()
     return flags
 
@@ -19,7 +19,8 @@ def infer():
 
     # embeddings = get_embeds(text_field.vocab.vectors)
     # (snli, text_embeds, label_embeds) = get_data()
-    (snli, text_vocab, label_vocab, text_embeds) = get_data()
+    (snli, text_field, label_vocab, text_embeds) = get_data()
+    text_stoi = text_field.vocab.stoi
     # , label_embeds
 
     while True:
@@ -28,8 +29,8 @@ def infer():
         hypothesis = input('Please input your hypothesis:\n')
         print('\n')
 
-        premise_idx    = text_vocab.stoi[premise]
-        hypothesis_idx = text_vocab.stoi[hypothesis]
+        premise_idx    = text_stoi[premise]
+        hypothesis_idx = text_stoi[hypothesis]
 
         prem_embeds = text_embeds(premise_idx)
         hyp_embeds  = text_embeds(hypothesis_idx)

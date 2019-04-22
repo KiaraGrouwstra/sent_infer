@@ -1,4 +1,4 @@
-name: dl
+name: sent
 channels:
 - pytorch
 - defaults
@@ -12,6 +12,5 @@ dependencies:
 - scipy=1.2.1=py37h7c811a0_0
 - pytorch=1.0.1=py3.7_cuda9.0.176_cudnn7.4.2_2
 - tqdm=4.31.1=py37_1
-# - dill=0.2.9=py3
 - joblib=0.13.2=py37_0
 - pytest=4.4.0=py37_1

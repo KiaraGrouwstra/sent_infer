@@ -7,6 +7,7 @@ WORKDIR /app
 COPY . /tmp
 
 RUN conda env create -f /tmp/environment.yml
-# RUN source activate dl
+RUN source activate sent
+RUN pip install -r requirements.txt
 
-# CMD ["python", "/app/assignment_1/code/unittests.py"]
+# CMD ["python", "/app/src/train.py"]

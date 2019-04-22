@@ -13,7 +13,7 @@ import torch.nn as nn
 import torch.optim
 from torchtext.datasets import SNLI
 from torchtext.vocab import GloVe
-from torchtext.data import Field, BucketIterator  # , batch
+from torchtext.data import Field, BucketIterator, Dataset  # , batch
 from nltk.tokenize import TreebankWordTokenizer
 from tensorboardX import SummaryWriter
 # from utils import *  # accuracy, eval_dataset  # , oh_encode
@@ -47,26 +47,38 @@ def invert_idxs(idxs):
 def accuracy(predictions, targets):
     return (predictions.argmax(dim=-1) == targets.argmax(dim=-1)).float().mean().detach().data.cpu().item()
 
-# TODO: don't mutate
-# mutates!
 def pick_samples(ds, n):
-    ds.examples = ds.examples[0:n]
-    return ds
+    examples = ds.examples[0:n]
+    return Dataset(examples, ds.fields)
 
-# # mutates!
-# def filter_samples(ds, fn):
-#     ds.examples = list(filter(fn, ds.examples))
-#     return ds
-
-def unpack_tokens(tpl):
+def unpack_tokens(tpl, text_embeds):
     (words_batch, lengths) = tpl
-    return (embeddings(words_batch), lengths)  # .to(torch.float)
+    return (text_embeds(words_batch), lengths)
 
-def batch_cols(batch):
-    prem_embeds, prem_lens = unpack_tokens(batch.premise)
-    hyp_embeds,   hyp_lens = unpack_tokens(batch.hypothesis)
-    labels = batch.label  # .to(torch.long)
+def batch_cols(batch, text_embeds):
+    prem_embeds, prem_lens = unpack_tokens(batch.premise   , text_embeds)
+    hyp_embeds,   hyp_lens = unpack_tokens(batch.hypothesis, text_embeds)
+    labels = batch.label
     return (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels)
+
+# def embed_tokens(tokens, stoi, text_embeds, size, pad_idx):
+#     idxs = list(map(lambda token: stoi[token], tokens)) + [pad_idx] * (size - len(tokens))
+#     return text_embeds(torch.LongTensor(idxs))
+
+# def batch_tokens(sentences, text_field, text_embeds):
+#     stoi = text_field.vocab.stoi
+#     pad_idx = stoi[text_field.pad_token]
+#     lens = list(map(len, sentences))
+#     size = max(lens)
+#     embeds = torch.stack([embed_tokens(x, stoi, text_embeds, size, pad_idx) for x in sentences])
+#     lens_ = torch.LongTensor(lens)
+#     return (embeds, lens_)
+
+# def batch_rows(batch, text_field, label_vocab, text_embeds):
+#     labels = torch.LongTensor([label_vocab.stoi[x.label] for x in batch])
+#     (prem_embeds, prem_lens) = batch_tokens([x.premise    for x in batch], text_field, text_embeds)
+#     (hypo_embeds, hypo_lens) = batch_tokens([x.hypothesis for x in batch], text_field, text_embeds)
+#     return (prem_embeds, prem_lens_, hypo_embeds, hypo_lens_, labels)
 
 def prep_torch():
     # make it deterministic for reproducibility
@@ -77,8 +89,6 @@ def prep_torch():
     torch.backends.cudnn.benchmark = False
 
     # pytorch defaults
-    dtype = torch.cuda.FloatTensor
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('device', device)
-    torch.set_default_tensor_type(dtype)
     return device

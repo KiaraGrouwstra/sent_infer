@@ -32,11 +32,13 @@ from timeit import default_timer as timer
 GLOVE_DIMS = 300  # glove embedding dimensions
 MEMORY = Memory(location='cache/', verbose=0)
 
+
 # @MEMORY.cache  # 30s...
-@anycache(cachedir='/tmp/glove.cache')
+@anycache(cachedir='/tmp/glove.cache')  # 10s :)
 def get_glove():
     return GloVe(dim=GLOVE_DIMS)
 
+# super fast, probably doesn't even need caching!
 # @anycache(cachedir='/tmp/embeds.cache')
 @MEMORY.cache
 def get_embeds(vectors):
@@ -52,62 +54,55 @@ def get_snli(text_field, label_field):
     # also filters out unknown label '-'! :)
     return SNLI.splits(text_field, label_field)
 
-# @anycache(cachedir='/tmp/both.cache')
-@MEMORY.cache
+# @anycache(cachedir='/tmp/both.cache')  # errors?
+# @MEMORY.cache  # doesn't actually seem to make it faster, 110s-ish
 def get_data():
-'''returns: (train, dev, test)'''
-with Timer('glove') as timer:
-    print('glove{')
-    # TODO: fix cache
-    # glove = GloVe(dim=GLOVE_DIMS)
-    glove = get_glove()
-    print('}')
-tokenizer = TreebankWordTokenizer().tokenize
-text_field = Field(sequential=True, tokenize=tokenizer, include_lengths=True, lower=True)
-# TODO: investigate these
-# , stop_words={}, fix_length=None, init_token='<s>', eos_token='</s>', preprocessing=None, postprocessing=None
-label_field = Field(sequential=False, pad_token=None, unk_token=None, is_target=True)
-with Timer('snli') as timer:
-    print('snli{')
+    '''returns: (train, dev, test)'''
+    with Timer('glove') as timer:
+        print('glove{')
+        # glove = GloVe(dim=GLOVE_DIMS)
+        glove = get_glove()
+        print('}')
+    tokenizer = TreebankWordTokenizer().tokenize
+    text_field = Field(sequential=True, tokenize=tokenizer, include_lengths=True, lower=True, use_vocab=True)
+    label_field = Field(sequential=False, pad_token=None, unk_token=None, is_target=True, use_vocab=True)
+    with Timer('snli') as timer:
+        print('snli{')
 
-    splits = get_snli(text_field, label_field)
+        splits = get_snli(text_field, label_field)
 
-    # fn = 'snli.obj'
-    # try:
-    #     with open(fn, 'rb') as fp:
-    #         # splits = pickle.load(fp)
-    #         with timer.child('load'):
-    #             splits = dill.load(fp)
-    # except EOFError:  # FileNotFoundError
-    #     with timer.child('define'):
-    #         # splits = SNLI.splits(text_field, label_field)
-    #         splits = get_snli(text_field, label_field)
-    #         # splits = get_snli()
-    #     with timer.child('dump'):
-    #         with open(fn, 'wb') as fp:
-    #             # pickle.dump(splits, fp)
-    #             dill.dump(splits, fp)
+        # fn = 'snli.obj'
+        # try:
+        #     with open(fn, 'rb') as fp:
+        #         # splits = pickle.load(fp)
+        #         with timer.child('load'):
+        #             splits = dill.load(fp)
+        # except EOFError:  # FileNotFoundError
+        #     with timer.child('define'):
+        #         # splits = SNLI.splits(text_field, label_field)
+        #         splits = get_snli(text_field, label_field)
+        #         # splits = get_snli()
+        #     with timer.child('dump'):
+        #         with open(fn, 'wb') as fp:
+        #             # pickle.dump(splits, fp)
+        #             dill.dump(splits, fp)
 
-    print('}')
+        print('}')
 
-# (train, dev, test) = splits
-text_field.build_vocab(*splits, vectors=glove)
-label_field.build_vocab(*splits)
-text_vocab = text_field.vocab
-label_vocab = label_field.vocab
+    # (train, dev, test) = splits
+    text_field.build_vocab(*splits, vectors=glove)
+    label_field.build_vocab(*splits)
+    text_vocab = text_field.vocab
+    label_vocab = label_field.vocab
 
-with Timer('embeddings') as timer:
-    print('embeddings{')
-    # embeddings = nn.Embedding.from_pretrained(text_field.vocab.vectors)
-    # embeddings.requires_grad = False
-    text_embeds  = get_embeds(text_vocab.vectors)
-    # label_embeds = get_embeds(label_vocab.vectors)
-    print('}')
+    with Timer('embeddings') as timer:
+        print('embeddings{')
+        # embeddings = nn.Embedding.from_pretrained(text_field.vocab.vectors)
+        # embeddings.requires_grad = False
+        text_embeds  = get_embeds(text_vocab.vectors)
+        # label_embeds = get_embeds(label_vocab.vectors)
+        print('}')
+    snli = [pick_samples(ds, n=100) for ds in splits]  # TODO: comment
 
-# snli = {'dev': dev, 'train': train, 'test': test}
-# snli = {k: pick_samples(v, n=100) for k, v in snli.items()}  # TODO: comment, flip sample/filter order
-# snli = {k: filter_samples(v, strip_unknown) for k, v in snli.items()}
-snli = [pick_samples(ds, n=100) for ds in splits]
-
-return (snli, text_vocab, label_vocab, text_embeds)
-# , label_embeds
+    return (snli, text_field, label_vocab, text_embeds)
+    # , label_embeds

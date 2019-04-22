@@ -44,10 +44,10 @@ def get_encoder(enc_type):
     elif enc_type == 'maxlstm':
         encoder = max_lstm
     else:  # baseline
-        encoder = lambda: Baseline(words_dim)  # words_length
+        encoder = Baseline(words_dim)  # words_length
     return encoder
 
-def eval_dataset(model, dataset, batch_size):
+def eval_dataset(model, dataset, batch_size, loss_fn):
     cols = ['loss', 'acc']
     df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
@@ -75,7 +75,7 @@ def get_optimizer(optim, optim_pars):
     return optimizer
 
 # def optimize():
-#     # TODO: investigate trixi: https://github.com/MIC-DKFZ/trixi/blob/master/examples/pytorch_experiment.ipynb
+#     # follow-up: investigate trixi: https://github.com/MIC-DKFZ/trixi/blob/master/examples/pytorch_experiment.ipynb
 #     emins = lambda n: list(reversed([10**-(i+1) for i in range(n)]))
 
 #     options = {
@@ -96,10 +96,16 @@ def get_optimizer(optim, optim_pars):
 #     run_ea = get_ea(options, eval_loss)
 #     best_member, best_loss = run_ea(n=8, rounds=20)
 
-def get_model(enc_type):
+def get_model(enc_type, batch_size):
     encoder = get_encoder(enc_type)
-    loss_fn = torch.nn.CrossEntropyLoss()
-    model = Model(GLOVE_DIMS, encoder)
+    model = Model(batch_size, encoder)
     device = prep_torch()
     model.to(device)
     return model
+
+def make_model(model_type, lr, weight_decay, optim, batch_size):
+    model = get_model(model_type, batch_size)
+    pars = model.parameters()
+    optim_pars = {'params': pars, 'lr': lr, 'weight_decay': weight_decay}
+    optimizer = get_optimizer(optim, optim_pars)
+    return (model, optimizer)
