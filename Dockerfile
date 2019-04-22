@@ -9,4 +9,4 @@ COPY . /tmp
 RUN conda env create -f /tmp/environment.yml
 # RUN source activate dl
 
-CMD ["python", "/app/assignment_1/code/unittests.py"]
+# CMD ["python", "/app/assignment_1/code/unittests.py"]
