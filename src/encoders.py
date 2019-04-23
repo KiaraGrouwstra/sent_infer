@@ -35,19 +35,27 @@ def lstms(input_size):
     # - bi-directional LSTM + max pooling
     kernel_size = input_size
     max_bi_lstm = bi_lstm
-    # max_bi_lstm = nn.Sequential(*[
-    #     bi_lstm,
-    #     nn.MaxPool1d(kernel_size),  # torch.max()?
-    # ])
-    return [LstmEncoder(lstm) for lstm in [uni_lstm, bi_lstm, max_bi_lstm]]
+    max_bi_lstm = nn.Sequential(*[
+        bi_lstm,
+        # nn.MaxPool1d(kernel_size),  # torch.max()?
+        LstmMax(),
+    ])
+    return [LstmEncoder(*args, hidden_size) for args in [(uni_lstm, 1), (bi_lstm, 2), (max_bi_lstm, 2)]]
+
+
+class LstmMax(nn.Module):
+
+    def forward(self, tpl):
+        # lstm output is a tuple for some reason
+        (out, _) = tpl
+        return out.data.max()
 
 class LstmEncoder(nn.Module):
 
-    def __init__(self, lstm):
+    def __init__(self, lstm, multiplier, hidden_size):
         super(LstmEncoder, self).__init__()
         self.lstm = lstm
-        multiplier = 2 if lstm.bidirectional else 1
-        self.dim = self.lstm.hidden_size * multiplier
+        self.dim = hidden_size * multiplier
 
     def forward(self, embeddings, lengths):
         # sort by decreasing length
