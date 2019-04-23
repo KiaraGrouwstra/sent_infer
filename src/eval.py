@@ -3,7 +3,7 @@ import argparse
 from utils import *
 from operator import itemgetter
 from model_utils import make_model
-from sent_eval import sent_eval, senteval_metrics
+from sent_eval import sent_eval
 from tensorboardX import SummaryWriter
 
 def parse_flags():

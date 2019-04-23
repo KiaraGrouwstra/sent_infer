@@ -27,7 +27,7 @@ python train.py --model_type lstm --model_name bilstm_optim\=adam_dim\=2048 --ch
 # evaluation
 python eval.py --model_type baseline --checkpoint_path checkpoint_folder/baseline_optim=sgd_dim=300.pth
 # inference
-python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
+python infer.py baseline checkpoint_folder/baseline_optim\=sgd_dim=300.pth
 ```
 
 ### Overview
@@ -61,5 +61,6 @@ python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
 - [ ] surf sara cuda errors
 - [ ] collect runs
 - [x] visualization
-    - tensorboard: https://github.com/lanpa/tensorboardX
+    - [ ] debug single-row CSVs
+    - [x] tensorboard: https://github.com/lanpa/tensorboardX
 - [ ] paper
