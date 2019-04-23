@@ -1,4 +1,5 @@
 *.pth
+events.out.*
 
 __MACOSX
 .DS_Store

@@ -20,7 +20,7 @@ def invert_idxs(idxs):
 
 # accuracy function from deep learning practical
 def accuracy(predictions, targets):
-    return (predictions.argmax(dim=-1) == targets).float().mean().detach().data.cpu().item()
+    return (predictions.argmax(dim=-1) == targets).float().mean() # .item()
 
 def pick_samples(ds, n):
     examples = ds.examples[0:n]
@@ -35,25 +35,6 @@ def batch_cols(batch, text_embeds):
     hyp_embeds,   hyp_lens = unpack_tokens(batch.hypothesis, text_embeds)
     labels = batch.label
     return (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels)
-
-# def embed_tokens(tokens, stoi, text_embeds, size, pad_idx):
-#     idxs = list(map(lambda token: stoi[token], tokens)) + [pad_idx] * (size - len(tokens))
-#     return text_embeds(torch.LongTensor(idxs))
-
-# def batch_tokens(sentences, text_field, text_embeds):
-#     stoi = text_field.vocab.stoi
-#     pad_idx = stoi[text_field.pad_token]
-#     lens = list(map(len, sentences))
-#     size = max(lens)
-#     embeds = torch.stack([embed_tokens(x, stoi, text_embeds, size, pad_idx) for x in sentences])
-#     lens_ = torch.LongTensor(lens)
-#     return (embeds, lens_)
-
-# def batch_rows(batch, text_field, label_vocab, text_embeds):
-#     labels = torch.LongTensor([label_vocab.stoi[x.label] for x in batch])
-#     (prem_embeds, prem_lens) = batch_tokens([x.premise    for x in batch], text_field, text_embeds)
-#     (hypo_embeds, hypo_lens) = batch_tokens([x.hypothesis for x in batch], text_field, text_embeds)
-#     return (prem_embeds, prem_lens_, hypo_embeds, hypo_lens_, labels)
 
 def prep_torch():
     # make it deterministic for reproducibility
@@ -70,6 +51,6 @@ def prep_torch():
 
 def get_stats(cols, vals):
     return dict(zip(cols, [
-        np.asscalar(i.detach().cpu().numpy().take(0)) if isinstance(i, torch.Tensor) else
+        i.item() if isinstance(i, torch.Tensor) else
         np.asscalar(i) if isinstance(i, (np.ndarray, np.generic)) else
         i for i in vals]))
