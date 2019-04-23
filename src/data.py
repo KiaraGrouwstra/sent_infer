@@ -20,7 +20,7 @@ def get_glove():
 
 # super fast, probably doesn't even need caching!
 # @anycache(cachedir='/tmp/embeds.cache')
-@MEMORY.cache
+# @MEMORY.cache
 def get_embeds(vectors):
     embeddings = nn.Embedding.from_pretrained(vectors).cpu()
     embeddings.requires_grad = False
