@@ -24,7 +24,7 @@ def get_encoder(enc_type):
         encoder = Baseline()  # words_length
     return encoder
 
-def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optimizer, stage, update_grad=False):
+def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optimizer, stage, csv_file, update_grad=False):
     cols = ['loss', 'acc']
     df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
@@ -36,14 +36,15 @@ def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optim
         vals = [loss, acc]
         stats = get_stats(cols, vals)
         print(yaml.dump({stage: {k: round(i, 3) if isinstance(i, float) else i for k, i in stats.items()}}))
-        df = df.append([dict(zip(cols, [loss, acc]))])
+        df = df.append([stats])
         if update_grad:
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
+    df.to_csv(csv_file)
     (loss, acc) = list(df.mean())
-    return (loss, acc)
+    return (loss, acc, df)
 
 def get_optimizer(optim, optim_pars):
     if optim == 'adadelta':

@@ -58,15 +58,19 @@ def train():
     (snli, text_field, label_vocab, text_embeds) = get_data()
     (train, dev, test) = snli
     cols = ['loss', 'acc']
+    stage_csv_file = lambda stage: os.path.join(checkpoint_path, f'{model_name}_{stage}.csv')
     with SummaryWriter(model_name) as w:
         for epoch in tqdm(range(max_epochs)):
 
-            # train
-            (train_loss, train_acc) = eval_dataset(model, train, batch_size, loss_fn, device, text_embeds, optimizer, 'train', True)
+            stage = 'train'
+            csv_file = stage_csv_file(stage)
+            (train_loss, train_acc, train_df) = eval_dataset(model, train, batch_size, loss_fn, device, text_embeds, optimizer, stage, csv_file, True)
 
             # evaluate on dev set and report results
             if epoch % eval_freq == 0:
-                (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn, device, text_embeds, optimizer, 'dev', False)
+                stage = 'dev'
+                csv_file = stage_csv_file(stage)
+                (dev_loss, dev_acc, dev_df) =   eval_dataset(model, dev,   batch_size, loss_fn, device, text_embeds, optimizer, stage, csv_file, False)
 
                 vals = [train_loss, train_acc]
                 stats = get_stats(cols, vals)
@@ -96,17 +100,39 @@ def train():
         print(checkpoint_file)
         torch.save(state, checkpoint_file)
 
-        # # save result csv
-        # csv_file = os.path.join(checkpoint_path, f'{model_name}.csv')
-        # df.to_csv(csv_file)
-        # csv_file = os.path.join(checkpoint_path, 'results.csv')
-        # if os.path.isfile(csv_file):
-        #     df.to_csv(csv_file, header=False, mode='a')
-        # else:
-        #     df.to_csv(csv_file, header=True, mode='w')
-
         # evaluate on test set
-        (loss, acc) = eval_dataset(model, test, batch_size, loss_fn, device, text_embeds, optimizer, 'test', False)
+        stage = 'test'
+        csv_file = stage_csv_file(stage)
+        (loss, acc, test_df) = eval_dataset(model, test, batch_size, loss_fn, device, text_embeds, optimizer, stage, csv_file, False)
+        
+        # save result csv
+        sub_dfs = {'train': train_df, 'dev': dev_df, 'test': test_df}
+        stages = sub_dfs.keys()
+        df = pd.DataFrame([], columns=[f'{stage}-{metric}' for stage in stages for metric in cols])
+        for stage in stages:
+            for metric in cols:
+                col = f'{stage}-{metric}'
+                sub_df = sub_dfs[stage]
+                df[col] = sub_df[metric]
+        # csv_file = stage_csv_file('all')
+        csv_file = os.path.join(checkpoint_path, f'{model_name}.csv')
+        df.to_csv(csv_file)
+        csv_file = os.path.join(checkpoint_path, 'results.csv')
+        if os.path.isfile(csv_file):
+            df.to_csv(csv_file, header=False, mode='a')
+        else:
+            df.to_csv(csv_file, header=True, mode='w')
+
+        # total = len(test.examples)
+        # labels = test.label
+        # # predictions = ?
+        # c_correct = len(np.where(predictions['contradiction'] == labels['contradiction'])[0])
+        # e_correct = len(np.where(predictions['entailment'] == labels['entailment'])[0])
+        # n_correct = len(np.where(predictions['neutral'] == labels['neutral'])[0])
+        # micro = ((c_correct / len(predictions['contradiction'])) +
+        #         (e_correct / len(predictions['entailment'])) +
+        #         (n_correct / len(predictions['neutral']))) / 3
+        # macro = (c_correct + e_correct + n_correct) / total
 
 if __name__ == '__main__':
     train()

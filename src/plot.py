@@ -9,11 +9,10 @@ sns.set_palette('pastel')
 
 # separate accuracy/loss curves
 
-def make_curve(ax, name, xs, y_dict):
+def make_curve(ax, name, xs, ys):
     ax.set_title(name)
-    for ys in y_dict.values():
-        sns.lineplot(xs, ys, ax=ax)
-    ax.legend(list(y_dict.keys()))
+    sns.lineplot(xs, ys, ax=ax)
+    # ax.legend(list(y_dict.keys()))
     ax.set_ylabel('')
     plt.ylabel('')
 
@@ -23,8 +22,8 @@ def loss_acc(csv_file):
     xs = df[x] = df.index
     fig, axes = plt.subplots(1, 2)
     (loss_ax, acc_ax) = axes
-    make_curve(loss_ax, 'loss',     xs, {'train': df['train_loss'], 'test': df['test_loss']})
-    make_curve( acc_ax, 'accuracy', xs, {'train': df['train_acc' ], 'test': df['test_acc' ]})
+    make_curve(loss_ax, 'loss',     xs, df['loss'])
+    make_curve( acc_ax, 'accuracy', xs, df['acc'])
     plt.ylabel('')
     png_file = re.sub('.csv', '.png', csv_file)
     fig.savefig(png_file)
@@ -38,7 +37,7 @@ def fix_idx(df):
     del df[idx]
     return df
 
-for csv_file in glob.glob(os.path.join(os.getcwd(), 'checkpoint_folder', '*.csv')):
+for csv_file in glob.glob(os.path.join(os.getcwd(), 'checkpoint_folder', 'baseline_*=*_*-*.csv')):
     loss_acc(csv_file)
 
 # # attempt at combined optimizer chart
