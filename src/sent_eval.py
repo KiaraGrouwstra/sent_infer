@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import data
+import os
 
 # Set PATHs
 # path to senteval
@@ -101,7 +102,7 @@ def batcher(params, batch):
 
 def sent_eval(data_path, encoder):
     params_senteval = {
-        'task_path': data_path,
+        'task_path': os.getcwd(),
         'usepytorch': True,
         'kfold': 10,
         'classifier': {
