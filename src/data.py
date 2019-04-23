@@ -14,7 +14,7 @@ GLOVE_DIMS = 300  # glove embedding dimensions
 MEMORY = Memory(location='cache/', verbose=0)
 
 # @MEMORY.cache  # 30s...
-@anycache(cachedir='/tmp/glove.cache')  # 10s :)
+# @anycache(cachedir='/tmp/glove.cache')  # 10s :)
 def get_glove():
     return GloVe(dim=GLOVE_DIMS)
 
