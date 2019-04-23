@@ -22,8 +22,8 @@ def get_glove():
 # @anycache(cachedir='/tmp/embeds.cache')
 # @MEMORY.cache
 def get_embeds(vectors):
-    embeddings = nn.Embedding.from_pretrained(vectors).cpu()
-    embeddings.requires_grad = False
+    embeddings = nn.Embedding.from_pretrained(vectors)  # .cpu()
+    # embeddings.requires_grad = False
     return embeddings
 
 def get_snli(text_field, label_field):
