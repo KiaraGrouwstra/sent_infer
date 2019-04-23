@@ -1,15 +1,17 @@
+import io
 import sys
 import numpy as np
 import data
 import os
+import logging
 
 # Set PATHs
 # path to senteval
 PATH_TO_SENTEVAL = '../SentEval/'
 # path to the NLP datasets 
-PATH_TO_DATA = '../data/downstream'
+# PATH_TO_DATA = '../data/downstream'
 # path to glove embeddings
-PATH_TO_VEC = '../pretrained/glove.840B.300d.txt'
+PATH_TO_VEC = '.vector_cache/glove.840B.300d.txt'
 
 # import SentEval
 sys.path.insert(0, PATH_TO_SENTEVAL)
@@ -102,7 +104,8 @@ def batcher(params, batch):
 
 def sent_eval(data_path, encoder):
     params_senteval = {
-        'task_path': os.getcwd(),
+        'task_path': data_path,
+        # 'task_path': os.getcwd(),
         'usepytorch': True,
         'kfold': 10,
         'classifier': {

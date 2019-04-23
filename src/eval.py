@@ -9,7 +9,7 @@ def parse_flags():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_type', type = str, default = 'mean', help='model, baseline (default), lstm, bilstm, maxlstm')
     parser.add_argument('--checkpoint_path', type = str, default = 'checkpoint_folder/mean.pth', help='model, default checkpoint_folder/mean.pth')
-    parser.add_argument('--eval_data_path', type = str, default = 'snli/train.tsv', help='eval data path, default snli/eval.tsv')
+    parser.add_argument('--eval_data_path', type = str, default = '../SentEval/data', help='eval data path, default ../SentEval/data')
     flags, unparsed = parser.parse_known_args()
     flag_keys = [
         'model_type',
