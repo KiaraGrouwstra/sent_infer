@@ -96,14 +96,14 @@ def train():
         print(checkpoint_file)
         torch.save(state, checkpoint_file)
 
-        # save result csv
-        csv_file = os.path.join(checkpoint_path, f'{model_name}.csv')
-        df.to_csv(csv_file)
-        csv_file = os.path.join(checkpoint_path, 'results.csv')
-        if os.path.isfile(csv_file):
-            df.to_csv(csv_file, header=False, mode='a')
-        else:
-            df.to_csv(csv_file, header=True, mode='w')
+        # # save result csv
+        # csv_file = os.path.join(checkpoint_path, f'{model_name}.csv')
+        # df.to_csv(csv_file)
+        # csv_file = os.path.join(checkpoint_path, 'results.csv')
+        # if os.path.isfile(csv_file):
+        #     df.to_csv(csv_file, header=False, mode='a')
+        # else:
+        #     df.to_csv(csv_file, header=True, mode='w')
 
         # evaluate on test set
         (loss, acc) = eval_dataset(model, test, batch_size, loss_fn, device, text_embeds, optimizer, 'test', False)

@@ -20,9 +20,12 @@ source activate sent
 pip install -r requirements.txt
 cd src
 # training
-python train.py --model_type lstm --model_name bilstm_optim\=adam_dim\=2048 --checkpoint_path checkpoint_folder --train_data_path snli/train.tsv
+python train.py --model_type baseline --model_name baseline_optim\=sgd_dim=300 --checkpoint_path checkpoint_folder
+# --train_data_path snli/train.tsv
+python train.py --model_type lstm --model_name bilstm_optim\=adam_dim\=2048 --checkpoint_path checkpoint_folder
+# --train_data_path snli/train.tsv
 # evaluation
-python eval.py <checkpoint_path> <eval_data_path>
+python eval.py --model_type baseline --checkpoint_path checkpoint_folder/baseline_optim=sgd_dim=300.pth
 # inference
 python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
 ```

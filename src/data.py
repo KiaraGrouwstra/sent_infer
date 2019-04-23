@@ -22,7 +22,7 @@ def get_glove():
 # @anycache(cachedir='/tmp/embeds.cache')
 @MEMORY.cache
 def get_embeds(vectors):
-    embeddings = nn.Embedding.from_pretrained(vectors)
+    embeddings = nn.Embedding.from_pretrained(vectors).cpu()
     embeddings.requires_grad = False
     return embeddings
 
