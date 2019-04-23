@@ -26,8 +26,8 @@ def get_encoder(enc_type):
 
 def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optimizer, stage, csv_file, update_grad=False):
     cols = ['loss', 'acc']
-    df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
+    metrics = []
     for batch in iterator:
         (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
         predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
@@ -35,13 +35,14 @@ def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optim
         acc = accuracy(predictions, labels)
         vals = [loss, acc]
         stats = get_stats(cols, vals)
+        metrics.append(stats)
         print(yaml.dump({stage: {k: round(i, 3) if isinstance(i, float) else i for k, i in stats.items()}}))
-        df = df.append([stats])
         if update_grad:
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
+    df = pd.DataFrame(metrics, columns=cols)
     df.to_csv(csv_file)
     (loss, acc) = list(df.mean())
     return (loss, acc, df)

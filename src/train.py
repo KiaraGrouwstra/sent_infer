@@ -123,16 +123,5 @@ def train():
         else:
             df.to_csv(csv_file, header=True, mode='w')
 
-        # total = len(test.examples)
-        # labels = test.label
-        # # predictions = ?
-        # c_correct = len(np.where(predictions['contradiction'] == labels['contradiction'])[0])
-        # e_correct = len(np.where(predictions['entailment'] == labels['entailment'])[0])
-        # n_correct = len(np.where(predictions['neutral'] == labels['neutral'])[0])
-        # micro = ((c_correct / len(predictions['contradiction'])) +
-        #         (e_correct / len(predictions['entailment'])) +
-        #         (n_correct / len(predictions['neutral']))) / 3
-        # macro = (c_correct + e_correct + n_correct) / total
-
 if __name__ == '__main__':
     train()
