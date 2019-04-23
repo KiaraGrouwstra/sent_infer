@@ -4,7 +4,7 @@ import data
 
 # Set PATHs
 # path to senteval
-PATH_TO_SENTEVAL = '../'
+PATH_TO_SENTEVAL = '../SentEval/'
 # path to the NLP datasets 
 PATH_TO_DATA = '../data/downstream'
 # path to glove embeddings

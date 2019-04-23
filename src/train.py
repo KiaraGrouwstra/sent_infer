@@ -12,6 +12,7 @@ from operator import itemgetter
 from tqdm import tqdm
 from model_utils import *
 from data import *
+import yaml
 
 def parse_flags():
     parser = argparse.ArgumentParser()
@@ -22,7 +23,7 @@ def parse_flags():
 
     parser.add_argument('--learning_rate', type = float, default = 0.1,
                         help='Learning rate')
-    parser.add_argument('--max_epochs', type = int, default = 10,  # 500
+    parser.add_argument('--max_epochs', type = int, default = 500,
                         help='Number of epochs to run trainer.')
     parser.add_argument('--batch_size', type = int, default = 64,
                         help='Batch size to run trainer.')
@@ -56,25 +57,24 @@ def train():
     device = prep_torch()
     (snli, text_field, label_vocab, text_embeds) = get_data()
     (train, dev, test) = snli
-    # with SummaryWriter(model_name) as w:
-    for epoch in tqdm(range(max_epochs)):
-        optimizer.zero_grad()
+    cols = ['loss', 'acc']
+    with SummaryWriter(model_name) as w:
+        for epoch in tqdm(range(max_epochs)):
 
-        # train
-        (train_iter,) = BucketIterator.splits(datasets=(train,), batch_sizes=[batch_size], device=device, shuffle=True)
-        for batch in train_iter:
-            (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
-            predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
-            train_loss = loss_fn(predictions, labels)
-            train_acc = accuracy(predictions, labels)
-            # print('train_loss', train_loss)
-            # print('train_acc', train_acc)
+            # train
+            (train_loss, train_acc) = eval_dataset(model, train, batch_size, loss_fn, device, text_embeds, optimizer, 'train', True)
 
             # evaluate on dev set and report results
             if epoch % eval_freq == 0:
-                (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn, device, text_embeds)
-                # print('dev_acc', dev_acc)
-                print({'dev_acc': dev_acc, 'dev_loss': dev_loss})
+                (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn, device, text_embeds, optimizer, 'dev', False)
+
+                vals = [train_loss, train_acc]
+                stats = get_stats(cols, vals)
+                w.add_scalars(f'metrics/train', stats, int(epoch / eval_freq))
+
+                vals = [dev_loss, dev_acc]
+                stats = get_stats(cols, vals)
+                w.add_scalars(f'metrics/dev', stats, int(epoch / eval_freq))
 
             # training is stopped when the learning rate goes under the threshold of 10e-5
             if lr < learning_threshold:
@@ -85,30 +85,28 @@ def train():
                 lr /= learning_decay
             prev_acc = dev_acc
 
-            train_loss.backward()
-            optimizer.step()
+        # save model
+        state = {
+            'model':      model           .state_dict(),
+            'optimizer':  optimizer       .state_dict(),
+            'classifier': model.classifier.state_dict(),
+            'encoder':    model.encoder   .state_dict(),
+        }
+        checkpoint_file = os.path.join(checkpoint_path, f'{model_name}.pth')
+        print(checkpoint_file)
+        torch.save(state, checkpoint_file)
 
-    state = {
-        'model':      model           .state_dict(),
-        'optimizer':  optimizer       .state_dict(),
-        'classifier': model.classifier.state_dict(),
-        'encoder':    model.encoder   .state_dict(),
-    }
-    checkpoint_file = os.path.join(checkpoint_path, f'{model_name}.pth')
-    print(checkpoint_file)
-    torch.save(state, checkpoint_file)
+        # save result csv
+        csv_file = os.path.join(checkpoint_path, f'{model_name}.csv')
+        df.to_csv(csv_file)
+        csv_file = os.path.join(checkpoint_path, 'results.csv')
+        if os.path.isfile(csv_file):
+            df.to_csv(csv_file, header=False, mode='a')
+        else:
+            df.to_csv(csv_file, header=True, mode='w')
 
-    # evaluate on test set
-    (loss, acc) = eval_dataset(model, test, batch_size, text_embeds)
-    # vals = [optim, *[val.detach().cpu().numpy().take(0) for val in metrics]]
-    stats = {
-        # 'optimizer':  optim,
-        'test_acc':   acc,
-        'test_loss':  loss,
-        # 'learning_rate': lr,
-    }
-    print(yaml.dump({k: round(i, 3) if isinstance(i, float) else i for k, i in stats.items()}))
-    # w.add_scalars('metrics', stats)
+        # evaluate on test set
+        (loss, acc) = eval_dataset(model, test, batch_size, loss_fn, device, text_embeds, optimizer, 'test', False)
 
 if __name__ == '__main__':
     train()

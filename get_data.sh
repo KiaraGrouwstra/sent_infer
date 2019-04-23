@@ -1,4 +1,5 @@
 # senteval
+# sudo apt-get install unzip
 git clone https://github.com/facebookresearch/SentEval.git
 cd SentEval/
 python setup.py install

@@ -14,3 +14,4 @@ dependencies:
 - tqdm=4.31.1=py37_1
 - joblib=0.13.2=py37_0
 - pytest=4.4.0=py37_1
+- scikit-learn=0.20.3=py37hd81dba3_0

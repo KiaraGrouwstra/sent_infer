@@ -67,3 +67,9 @@ def prep_torch():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('device', device)
     return device
+
+def get_stats(cols, vals):
+    return dict(zip(cols, [
+        np.asscalar(i.detach().cpu().numpy().take(0)) if isinstance(i, torch.Tensor) else
+        np.asscalar(i) if isinstance(i, (np.ndarray, np.generic)) else
+        i for i in vals]))

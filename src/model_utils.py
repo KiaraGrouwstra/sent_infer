@@ -6,6 +6,7 @@ from encoders import Baseline, lstms
 from model import Model
 import pandas as pd
 from tqdm import tqdm
+import yaml
 
 # constants
 GLOVE_DIMS = 300  # glove embedding dimensions
@@ -23,17 +24,24 @@ def get_encoder(enc_type):
         encoder = Baseline()  # words_length
     return encoder
 
-def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds):
+def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds, optimizer, stage, update_grad=False):
     cols = ['loss', 'acc']
     df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
     for batch in iterator:
         (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
         predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
-        df = df.append([dict(zip(cols, [
-            loss_fn( predictions, labels),
-            accuracy(predictions, labels),
-        ]))])
+        loss = loss_fn(predictions, labels)
+        acc = accuracy(predictions, labels)
+        vals = [loss, acc]
+        stats = get_stats(cols, vals)
+        print(yaml.dump({stage: {k: round(i, 3) if isinstance(i, float) else i for k, i in stats.items()}}))
+        df = df.append([dict(zip(cols, [loss, acc]))])
+        if update_grad:
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
     (loss, acc) = list(df.mean())
     return (loss, acc)
 

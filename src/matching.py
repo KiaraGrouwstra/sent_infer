@@ -11,6 +11,6 @@ class Matching(nn.Module):
         # element-wise product u ∗ v
         product = torch.mul(u, v)
         # absolute element-wise difference |u − v|
-        diff = torch.abs(u - v)
+        diff = (u - v).abs()
         features = [concat, product, diff]
         return torch.cat(features, dim=dim)

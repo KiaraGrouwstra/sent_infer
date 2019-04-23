@@ -18,12 +18,13 @@ conda env update -n sent -f environment.yml
 docker build -t sent .
 source activate sent
 pip install -r requirements.txt
+cd src
 # training
-python src/train.py --model_type lstm --model_name bilstm_optim\=adam_dim\=2048 --checkpoint_path checkpoint_folder --train_data_path snli/train.tsv
+python train.py --model_type lstm --model_name bilstm_optim\=adam_dim\=2048 --checkpoint_path checkpoint_folder --train_data_path snli/train.tsv
 # evaluation
-python src/eval.py <checkpoint_path> <eval_data_path>
+python eval.py <checkpoint_path> <eval_data_path>
 # inference
-python src/infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
+python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
 ```
 
 ### Overview

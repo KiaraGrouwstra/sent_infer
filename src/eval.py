@@ -1,13 +1,18 @@
 import os
 import argparse
 from utils import *
+from operator import itemgetter
+from model_utils import make_model
+from sent_eval import sent_eval
 
 def parse_flags():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--checkpoint_path', type = str, default = 'mean.pth', help='model, default checkpoint_folder/mean.pth')
+    parser.add_argument('model_type', type = str, default = 'mean', help='model, baseline (default), lstm, bilstm, maxlstm')
+    parser.add_argument('--checkpoint_path', type = str, default = 'checkpoint_folder/mean.pth', help='model, default checkpoint_folder/mean.pth')
     parser.add_argument('--eval_data_path', type = str, default = 'snli/train.tsv', help='eval data path, default snli/eval.tsv')
     flags, unparsed = parser.parse_known_args()
     flag_keys = [
+        'model_type',
         'checkpoint_path',
         'eval_data_path',
     ]
@@ -48,8 +53,8 @@ def senteval(checkpoint_path, eval_data_path):
 
 if __name__ == '__main__':
     (
+        model_type,
         checkpoint_path,
         eval_data_path,
     ) = parse_flags()
-    eval(checkpoint_path)
     senteval(checkpoint_path, eval_data_path)
