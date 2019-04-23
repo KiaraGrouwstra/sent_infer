@@ -43,7 +43,7 @@ python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
     - [x] glove baseline
     - [x] uni-directional LSTM
     - [x] bi-directional LSTM
-    - [x] bi-directional LSTM + max pooling
+    - [ ] bi-directional LSTM + max pooling
 - [x] hyperparams: Conneau 3.3
     - [x] SGD
     - [x] learning rate 0.1
@@ -58,5 +58,8 @@ python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
     - [x] SNLI macro metric: average of dev accuracies
     - [x] SNLI micro metric: sum of the dev accuracies, weighted by the number of dev samples
     - [ ] SentEval: https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
-- [x] visualization
+- [ ] surf sara cuda errors
+- [ ] collect runs
+- [ ] visualization
     - tensorboard: https://github.com/lanpa/tensorboardX
+- [ ] paper
