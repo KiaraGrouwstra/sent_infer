@@ -11,7 +11,6 @@ from tqdm import tqdm
 GLOVE_DIMS = 300  # glove embedding dimensions
 
 def get_encoder(enc_type):
-    (n_dim, words_dim, embedding_dim) = range(3)
     input_size = GLOVE_DIMS
     [uni_lstm, bi_lstm, max_lstm] = lstms(input_size)
     if enc_type == 'lstm':
@@ -21,7 +20,7 @@ def get_encoder(enc_type):
     elif enc_type == 'maxlstm':
         encoder = max_lstm
     else:  # baseline
-        encoder = Baseline(words_dim)  # words_length
+        encoder = Baseline()  # words_length
     return encoder
 
 def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds):

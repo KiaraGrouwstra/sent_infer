@@ -73,8 +73,8 @@ def train():
             # evaluate on dev set and report results
             if epoch % eval_freq == 0:
                 (dev_loss, dev_acc) = eval_dataset(model, dev, batch_size, loss_fn, device, text_embeds)
-                # print('dev_loss', dev_loss)
-                print('dev_acc', dev_acc)
+                # print('dev_acc', dev_acc)
+                print({'dev_acc': dev_acc, 'dev_loss': dev_loss})
 
             # training is stopped when the learning rate goes under the threshold of 10e-5
             if lr < learning_threshold:

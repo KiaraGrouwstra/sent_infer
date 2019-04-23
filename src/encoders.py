@@ -1,25 +1,18 @@
 import torch
 import torch.nn as nn
 from utils import *
+from pdb import set_trace
 
 # - glove baseline
 class Baseline(nn.Module):
     '''average word embeddings to obtain sentence representations'''
 
-    def __init__(self, words_dim):  # , words_length
-        # words_length: number of words including padding
+    def __init__(self):
         super(Baseline, self).__init__()
-        # self.words_length = words_length
-        self.words_dim = words_dim
 
-    # def forward(self, packed_seq):
     def forward(self, embeddings, lengths):
-        # words_embeddings: dimensions include embedding dimension, word, and sentence
-        # words_embeddings = packed_seq.data
-        # # words_used: number of words per sentence (excl. padding)
-        # words_used = packed_seq.batch_sizes
-        return words_length / words_used * embeddings.mean(dim=self.words_dim)  # TODO: fix
-        # return words_embeddings.mean(dim=self.words_dim)
+        words_dim = 0
+        return embeddings.sum(dim=words_dim) / lengths.view(-1, 1).float()
 
 def lstms(input_size):
     # LSTMs: https://github.com/VictorZuanazzi/Inference_Bot/blob/master/code/encoder.py
@@ -55,4 +48,4 @@ class LstmEncoder(nn.Module):
         (encoded, _) = self.lstm(packed)
         (padded, _lengths) = nn.utils.rnn.pad_packed_sequence(encoded, batch_first=False, padding_value=0.0, total_length=None)
         resorted = padded[:, inverted_idxs, :]
-        return resorted
+        return resorted.mean(dim=0)

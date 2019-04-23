@@ -6,6 +6,7 @@ class Matching(nn.Module):
 
     def forward(self, u, v):
         # concatenation of the two representations (u, v)
+        # dim = 0
         dim = 1
         concat = torch.cat([u, v], dim=dim)
         # element-wise product u ∗ v
