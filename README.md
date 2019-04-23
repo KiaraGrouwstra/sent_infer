@@ -57,7 +57,8 @@ python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
 - [x] evaluation
     - [x] SNLI macro metric: average of dev accuracies
     - [x] SNLI micro metric: sum of the dev accuracies, weighted by the number of dev samples
-    - [ ] SentEval: https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
+    - [x] SentEval: https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
+        [ ] micro/macro metrics
 - [ ] surf sara cuda errors
 - [ ] collect runs
 - [ ] visualization

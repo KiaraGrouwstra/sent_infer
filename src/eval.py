@@ -3,7 +3,8 @@ import argparse
 from utils import *
 from operator import itemgetter
 from model_utils import make_model
-from sent_eval import sent_eval
+from sent_eval import sent_eval, senteval_metrics
+from tensorboardX import SummaryWriter
 
 def parse_flags():
     parser = argparse.ArgumentParser()
@@ -23,10 +24,8 @@ def senteval(checkpoint_path, eval_data_path):
     optim = 'adam'
     lr = 0.001
     weight_decay = 0.0
-    # model = get_model(model_type, batch_size)
     (model, optimizer) = make_model(model_type, lr, weight_decay, optim, batch_size)
     checkpoint = torch.load(checkpoint_path)
-    # set_trace()
     for k, v in {
         'model':      model,
         'optimizer':  optimizer,
@@ -38,18 +37,18 @@ def senteval(checkpoint_path, eval_data_path):
     pars = model.parameters()
 
     # https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
-    results = sent_eval(eval_data_path, model.encoder).items()
-    # for task, result in results:
-    #     w.add_scalars(os.path.join('tasks', task), result)
-    (micro, macro) = senteval_metrics(results)
-    metrics = {
-        'micro': micro,
-        'macro': macro,
-    }
-    # w.add_scalars('senteval/metrics', metrics)
-
-    # w.export_scalars_to_json('./scalars.json')
-    # return loss
+    results = sent_eval(eval_data_path, model.encoder)
+    with SummaryWriter('senteval') as w:
+        for task, result in results.items():
+            print(task, result)
+            # w.add_scalars(os.path.join('tasks', task), result)
+        # (micro, macro) = senteval_metrics(results)
+        # metrics = {
+        #     'micro': micro,
+        #     'macro': macro,
+        # }
+        # print(metrics)
+        # w.add_scalars('senteval/metrics', metrics)
 
 if __name__ == '__main__':
     (
