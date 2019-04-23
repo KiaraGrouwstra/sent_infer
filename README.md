@@ -60,6 +60,6 @@ python infer.py lstm checkpoint_folder/bilstm_optim\=adam_dim\=2048.pth
 - [x] [jupyter notebook](https://colab.research.google.com/drive/1z9ncZwkO7CEGNohcgw6YGBmNlkIQAZO3)
 - [ ] surf sara cuda errors
 - [ ] collect runs
-- [ ] visualization
+- [x] visualization
     - tensorboard: https://github.com/lanpa/tensorboardX
 - [ ] paper

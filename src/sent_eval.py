@@ -113,18 +113,3 @@ def sent_eval(data_path, encoder):
     ] + (gpu_tasks if torch.cuda.is_available() else [])
     results = se.eval(transfer_tasks)
     return results
-
-def senteval_metrics(results):
-    macros = []
-    micros = []
-    total = sum([result['nsamples'] for result in results.values()])
-    for task, result in results.items():
-        acc = result['devacc']
-        n = result['nsamples']
-        macros.append(acc)
-        micros.append(acc * n / total)  # TODO: check
-    # macro metric: average of dev accuracies, equal weight to each class
-    macro = np.mean(macros)
-    # micro metric: sum of dev accuracies, weighted by number of dev samples; equal weight to each per-document classification decision
-    micro = np.sum(micros)
-    return (micro, macro)

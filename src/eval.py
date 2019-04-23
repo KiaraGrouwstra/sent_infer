@@ -42,13 +42,6 @@ def senteval(checkpoint_path, eval_data_path):
         for task, result in results.items():
             print(task, result)
             # w.add_scalars(os.path.join('tasks', task), result)
-        # (micro, macro) = senteval_metrics(results)
-        # metrics = {
-        #     'micro': micro,
-        #     'macro': macro,
-        # }
-        # print(metrics)
-        # w.add_scalars('senteval/metrics', metrics)
 
 if __name__ == '__main__':
     (
