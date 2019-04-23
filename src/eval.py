@@ -13,32 +13,27 @@ def parse_flags():
     ]
     return itemgetter(*flag_keys)(vars(flags))
 
-def eval(checkpoint_path):
-    # batch_size = ?
-    # text_embeds = ?
-    model = torch.load(checkpoint_path)
-
-    # embeddings = get_embeds(text_field.vocab.vectors)
-    (snli, text_field, label_vocab, text_embeds) = get_data()
-    # , label_embeds
-
-    (train, dev, test) = splits
-    (loss, acc) = eval_dataset(model, test, batch_size, text_embeds)
-    # vals = [optim, *[val.detach().cpu().numpy().take(0) for val in metrics]]
-    stats = {
-        # 'optimizer':  optim,
-        'test_acc':   acc,
-        'test_loss':  loss,
-        # 'learning_rate': lr,
-    }
-    print(yaml.dump({k: round(i, 3) if isinstance(i, float) else i for k, i in stats.items()}))
-    # w.add_scalars('metrics', stats)
-
 def senteval(checkpoint_path, eval_data_path):
+    batch_size = 64
+    optim = 'adam'
+    lr = 0.001
+    weight_decay = 0.0
+    # model = get_model(model_type, batch_size)
+    (model, optimizer) = make_model(model_type, lr, weight_decay, optim, batch_size)
+    checkpoint = torch.load(checkpoint_path)
+    # set_trace()
+    for k, v in {
+        'model':      model,
+        'optimizer':  optimizer,
+        'classifier': model.classifier,
+        'encoder':    model.encoder,
+    }.items():
+        v.load_state_dict(checkpoint[k])
+    # print('model', model)
+    pars = model.parameters()
+
     # https://uva-slpl.github.io/ull/resources/practicals/practical3/senteval_example.ipynb
-    model = torch.load(checkpoint_path)
-    encoder = model.encoder
-    results = sent_eval(eval_data_path, encoder).items()
+    results = sent_eval(eval_data_path, model.encoder).items()
     # for task, result in results:
     #     w.add_scalars(os.path.join('tasks', task), result)
     (micro, macro) = senteval_metrics(results)

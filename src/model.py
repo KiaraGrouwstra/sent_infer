@@ -28,15 +28,14 @@ class Model(nn.Module):
         ])
 
         self.matching = Matching()
+        self.classifier = classifier
+        self.softmax = torch.nn.Softmax(dim=words_dim)
 
         self.net = nn.Sequential(*[
             # Matching(),
-            classifier,
-            torch.nn.Softmax(dim=words_dim),
+            self.classifier,
+            self.softmax,
         ])
-
-        # self.classifier = classifier
-        # self.softmax = torch.nn.Softmax(dim=words_dim)
 
     def forward(self, premises, premise_lengths, hypotheses, hypothesis_lengths):
         u = self.encoder(premises,      premise_lengths)

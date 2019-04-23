@@ -27,7 +27,7 @@ def eval_dataset(model, dataset, batch_size, loss_fn, device, text_embeds):
     cols = ['loss', 'acc']
     df = pd.DataFrame([], columns=cols)
     (iterator,) = BucketIterator.splits(datasets=(dataset,), batch_sizes=[batch_size], device=device, shuffle=True)
-    for batch in tqdm(iterator):
+    for batch in iterator:
         (prem_embeds, prem_lens, hyp_embeds, hyp_lens, labels) = batch_cols(batch, text_embeds)
         predictions = model.forward(prem_embeds, prem_lens, hyp_embeds, hyp_lens)
         df = df.append([dict(zip(cols, [
